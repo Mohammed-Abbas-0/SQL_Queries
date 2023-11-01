@@ -1,0 +1,40 @@
+
+use AlRajeeh
+
+;with FixedBand as 
+(
+	select 
+	
+	Dtl.BandId as BandId,
+	invoice.Id as InvoiceId,
+	Job.Id as JobId
+	from Stock_PurchaseInvoiceHdr Hdr
+	join Stock_PurchaseInvoiceBandsDtl Dtl on Hdr.Id = Dtl.MasterId
+	join CC_Jobs Job on Dtl.JobId = Job.Id
+	join CC_Invoices invoice on  Job.Id = invoice.JobId 
+	join CC_InvoicesDtl invoiceDtl on invoice.Id = invoiceDtl.MasterId
+	where 
+		isnull(invoice.Deleted,0)=0 and
+		isnull(Hdr.Deleted,0)=0 and
+		Dtl.BandId = invoiceDtl.BandId and
+		isnull(Dtl.CCInvoiceId,0)=0
+)
+
+
+
+Update T set T.CCInvoiceId = FixedBand.InvoiceId
+from Stock_PurchaseInvoiceBandsDtl T
+join FixedBand on T.BandId = FixedBand.BandId
+where FixedBand.JobId = T.JobId
+
+
+
+
+
+
+
+
+
+
+
+
